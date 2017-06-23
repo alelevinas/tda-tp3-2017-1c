@@ -1,13 +1,13 @@
-class Graph:
+class MultiGraph:
     """
-    Grafo dirigido con un número fijo de vértices.
+    MultiGrafo no dirigido con un número fijo de vértices.
+
+    A multigraph allows multiple edges between the same pair of nodes
 
     Los vértices son siempre números enteros no negativos. El primer vértice
     es 0.
 
-    El grafo se crea vacío, se añaden las aristas con add_edge(). Una vez
-    creadas, las aristas no se pueden eliminar, pero siempre se pueden añadir
-    nuevas aristas.
+    El grafo se crea vacío, se añaden las aristas con add_edge().
     """
 
     def __init__(self, v):
@@ -101,6 +101,37 @@ class Graph:
     def __len__(self):
         return self.v
 
+    def collapse_edge(self, e):
+        """
+        Collapses an edge. Makes all edges (e.dst - w) point to (e.src - w)
+        :param e:
+        :return:
+        """
+        u, v = e.src, e.dst
+        self.adj[u] = [u_edge for u_edge in self.adj[u] if u_edge.dst != v]  # remove (u, v) edge
+        v_edges = [v_edge for v_edge in self.adj_e(v) if v_edge.dst != u]  # remove (v, u) edge
+
+        # add all edges from v to Ws into u
+        for edge in v_edges:
+            self.add_edge(u, edge.dst)
+            self.add_edge(edge.dst, u)
+
+        # delete edges from v to Ws
+        self.adj[v] = []
+
+        # delete edges from Ws to V
+        self.remove_edges_to(v)
+
+    def remove_edges_to(self, v):
+        """
+        Removes any edge pointing to v.
+        :param v: a node
+        :return:
+        """
+        for node in self.adj:
+            self.adj[node] = [e for e in self.adj[node] if e.dst != v]
+
+
 
 class Edge:
     """
@@ -112,14 +143,14 @@ class Edge:
         self.weight = weight
 
     def __str__(self):
-        return "Edge from " + self.src + "to " + self.dst + ", weight: " + str(self.weight)
+        return "Edge from " + str(self.src) + " to " + str(self.dst) + ", weight: " + str(self.weight)
 
 
 def create_graph_from_file(file, is_directed=True):
     with open(file, "r") as file:
         num_v = int(file.readline())
         num_e = int(file.readline())
-        g = Digraph(num_v)
+        g = MultiGraph(num_v)
         for i in range(num_e):
             vertexes = file.readline().split()
             u, v = int(vertexes[0]), int(vertexes[1])

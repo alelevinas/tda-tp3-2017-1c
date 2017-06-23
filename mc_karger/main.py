@@ -8,7 +8,7 @@ def main(argv):
     g = create_graph_from_file(os.getcwd() + "/" + file, False)  # no dirigido
     d = KargerMC(g)
 
-    print("Minimum cut of graph {} is: {}".format(file, d))
+    print("Minimum cut of graph {} is of size: {}".format(file, d.mincutK))
     # print("Path to 9: {}  from {}".format(d.path_to(9), s))
 
 

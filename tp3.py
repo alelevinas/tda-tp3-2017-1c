@@ -27,8 +27,8 @@ def main(argc, argv):
 
     if ej == "-kg":
         print(argv)
-        file_name = params
-        print("DIJKSTRA")
+        file_name = params[0]
+        print("KARGER")
         return measure_time(kg_main, file_name)
 
 
